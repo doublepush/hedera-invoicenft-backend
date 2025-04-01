@@ -12,8 +12,17 @@ env.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: '*', // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+}));
+app.options('*', cors()); // Handle preflight requests
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Optional: for parsing URL-encoded data
+
+
 
 // Supabase setup
 const supabase = createClient(
@@ -91,6 +100,9 @@ app.post('/api/auth/metamask', async (req, res) => {
 app.post('/api/auth/email', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Request Body:', req.body); // Log the request body
+    console.log('Email:', email); // Log the email
+
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -298,7 +310,7 @@ app.post("/users", async (request, response) => {
 });
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
